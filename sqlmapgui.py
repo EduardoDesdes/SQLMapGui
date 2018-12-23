@@ -1,19 +1,22 @@
 import Tkinter
 import os
 
-#Ejecutar en la misma shell
+#Funcion para ejecutar el sqlmap en la misma shell que se ejecuta el programa
 def current():
     #global val_tampers
     payload=sqlmap+" -u "+target.get()+" -D "+db.get()+" -T "+table.get()+" -C "+column.get()+" --dump"
+    #Verificar antes de ejecutar
     print payload
+    #Ejecutar en la shell
     #os.system(payload)
 
-#Funcion para abrir shells en diferentes sessiones
+#Funcion para ejecutar el sqlmap en otras shells
 def other():
     payload=sqlmap+" -u "+target.get()+" -D "+db.get()+" -T "+table.get()+" -C "+column.get()+" --dump"
-    #gnome-terminal -x bash -c "comando;bash"
+    #Comando usado: gnome-terminal -x bash -c "comando;bash"
     os.system('gnome-terminal -x bash -c "'+payload+';bash"')
 
+#Funcion para crear la cadena de tampers ejm: tamper1,tamper2,tamper3
 def set_tamp(var):
     #global var
     #i = 0
@@ -21,14 +24,20 @@ def set_tamp(var):
     #    print str(val_tampers[i].get())+",",
     #print ""
     print var
-    
+#Ventana Window Tamper    
 def tampers():
+
+    #Creaccion de la ventana tamper
     tamperv = Tkinter.Tk()
     tamperv.title("Window-Tampers")
+    #seteando posicion con la ventana main
     x=root.winfo_x()#+400
     y=root.winfo_y()+300
-    #tamperv.overrideredirect(1)
     tamperv.geometry("600x330+"+str(x)+"+"+str(y))
+    #Quitando Bordes
+    #tamperv.overrideredirect(1)
+
+    #Tamper List
     tampers=["apostrophemask","apostrophenullencode","appendnullbyte",
         "base64encode","between","bluecoat","chardoubleencode",
         "charencode","charunicodeencode","concat2concatws",
@@ -41,8 +50,10 @@ def tampers():
         "space2plus","space2randomblank","sp_password","unionalltounion",
         "unmagicquotes","versionedkeywords","versionedmorekeywords"]
 
+    #Tamper Seleccionados
     current_tampers=[]
 
+    #Boton informativo
     tamp_info = Tkinter.Button(tamperv, text="Que tamper usar", command=tamp_txt)
     tamp_info.grid(row=0,column=0)
 
@@ -54,14 +65,15 @@ def tampers():
     #tamp_info = Tkinter.Button(tamperv, text="Actualizar Tampers", command=lambda: set_tamp(var))
     #tamp_info.grid(row=0,column=2)
 
+    #Agregar los Checkbutton en la ventana tamper
     r = 1
     c = 0
     pos = 0
-    #val_tampers = []
+    cb_tampers = []
     for tamper in tampers:
         #print pos
         #val_tampers.append(Tkinter.IntVar())
-        Tkinter.Checkbutton(tamperv, text=tamper, command=lambda:set_tamp(str(tamper))).grid(row=r,column=c)
+        Tkinter.Checkbutton(tamperv, text=tamper, command=lambda:set_tamp()).grid(row=r,column=c)
         print tampers[pos]
         pos = pos + 1
         #c = c + 1
@@ -72,7 +84,10 @@ def tampers():
             r = 1
             c = c + 1
 
+    #Loop Ventana tampers
     tamperv.mainloop()
+
+    #Para validad y actualizar el texto del boton del tamper
     #if tamp == 0:
     #    tamperv.state(newstate='normal')
     #    btn_text.set("Ocultar Window Tamper")
@@ -82,12 +97,13 @@ def tampers():
     #    btn_text.set("Mostrar Window Tamper")
     #    tamp = 0
 
+#Ejecutar lista de tampers informativa
 def tamp_txt():
     os.system('gnome-terminal -x bash -c "cat tampers.txt;bash"')
    
    
 #####################################################    
-#Ventana main
+#Ventana Principal
 root = Tkinter.Tk()
 root.title("SqlMapGui")
 root.geometry("400x300")
@@ -134,38 +150,6 @@ boton3 = Tkinter.Button(root, textvariable=btn_text, command=tampers)
 btn_text.set("Mostrar Window Tamper")
 boton3.pack()
 tamp = 0
-
-########################################################
-#Ventana Tamper
-
-#tamperv = Tkinter.Tk()
-#tamperv.title("Window-Tampers")
-#tamperv.geometry("500x300")
-#tamperv.overrideredirect(1)
-#tamperv.state(newstate='withdraw')
-
-
-
-
-"""
-r = 1
-c = 0
-pos = 0
-val_tampers = []
-for tamper in tampers:
-    #print pos
-    val_tampers.append(Tkinter.IntVar())
-    Tkinter.Checkbutton(tamperv, text=tamper, variable=val_tampers[pos]).grid(row=r,column=c)
-    pos = pos + 1
-    #c = c + 1
-    r = r + 1
-    if r == 14:
-        #c = 0
-        #r = r + 1
-        r = 1
-        c = c + 1
-"""
-
 
 #Loop infinito hasta cerrar la ventana
 root.mainloop()

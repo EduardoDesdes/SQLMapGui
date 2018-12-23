@@ -6,12 +6,75 @@ import os
 
 #Funcion para ejecutar el sqlmap en la misma shell que se ejecuta el programa
 def current():
+    #Iniciando archivo de logs
+    log = open ('logsqlmapgui.txt','a')
+
     #global val_tampers
-    payload=sqlmap+" -u \""+target.get()+"\" -D \""+db.get()+"\" -T \""+table.get()+"\" -C \""+column.get()+"\" --dump"
+    payload=sqlmap
+
+    if target.get() is not "":
+        payload = payload + " -u \""+target.get()
+
+        if post.get('1.0', 'end-1c') is not "":
+            payload = payload + " --data \""+post.get('1.0', 'end-1c')
+
+        if parametros.get() is not "":
+            payload = payload + "\" -p \""+parametros.get()
+
+        if db.get() is not "":
+            payload = payload + "\" -D \""+db.get()
+
+            if table.get() is not "":
+                payload = payload + "\" -T \""+table.get()
+
+                if column.get() is not "":
+                    payload = payload +"\" -C \""+column.get()+"\" --dump"
+                else:
+                    payload = payload + "\" --columns"
+            else:
+                payload = payload + "\" --tables"
+        else:
+            payload = payload + "\" --dbs"
+    else:
+        payload = payload + " --h"
+
+    if lvl.get() is not "":
+        payload = payload + " --level="+lvl.get()
+    if rsk.get() is not "":
+        payload = payload + " --risk="+rsk.get()
+    if thr.get() is not "":
+        payload = payload + " --threads="+thr.get()
+    if v.get() is not "":
+        payload = payload + " -v="+v.get()
+    #no-cast
+    if nc.get() is 1:
+        payload = payload + " --no-cast"
+    #random-agent
+    if ra.get() is 1:
+        payload = payload + " --random-agent"
+    #user-agent
+    if ua.get() is not "":
+        payload = payload + " --user-agent=\""+ua.get()+"\""
+    #timesec
+    if ts.get() is not "":
+        payload = payload + " --time-sec="+ts.get()
+    #timeout
+    if to.get() is not "":
+        payload = payload + " --timeout="+to.get()
+    #proxy
+    if proxy.get() is not "":
+        payload = payload + " --proxy=\""+proxy.get()+"\""
+
+    #Guardando logs
+    log.write(payload+'\n')
+
     #Verificar antes de ejecutar
     print payload
     #Ejecutar en la shell
-    #os.system(payload)
+    os.system(payload)
+
+    #Cerrando los logs
+    log.close()
 
 #Funcion para ejecutar el sqlmap en otras shells
 def other():
@@ -145,6 +208,8 @@ root.geometry("400x400")
 #Creando cadena inicial
 
 sqlmap = "sqlmap"
+
+#InterfaceGrafica
 Tkinter.Label(root, text="------Target Section---------------------------------------------------").place(x=10, y=5)
 #Target
 Tkinter.Label(root, text="URL Vulnerable").place(x=15, y=25)
@@ -197,14 +262,14 @@ v = Tkinter.Entry(root, width=1)
 v.place(x=270, y=205)
 
 #No Cast
-nc = Tkinter.Checkbutton(root, text="--no-cast")
-nc.place(x=290, y=205)
+nc = Tkinter.IntVar()
+Tkinter.Checkbutton(root, text="--no-cast", variable=nc).place(x=290, y=205)
 
 Tkinter.Label(root, text="------Connection Section---------------------------------------------").place(x=10, y=230)
 
 #--Random-Agent
-ra = Tkinter.Checkbutton(root, text="--random-agent")
-ra.place(x=8, y=250)
+ra = Tkinter.IntVar()
+Tkinter.Checkbutton(root, text="--random-agent", variable=ra).place(x=8, y=250)
 
 #--user-agent=
 Tkinter.Label(root, text="--user-agent=").place(x=140, y=250)
@@ -224,8 +289,8 @@ to.place(x=185, y=275)
 
 #Proxy
 Tkinter.Label(root, text="--proxy=").place(x=210, y=275)
-to = Tkinter.Entry(root, width=13)
-to.place(x=273, y=275)
+proxy = Tkinter.Entry(root, width=13)
+proxy.place(x=273, y=275)
 
 
 #Tamper Seleccionados

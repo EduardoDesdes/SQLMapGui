@@ -1,6 +1,6 @@
-#SqlMapGui
+# SqlMapGui
 
-##Version 1.0
+## Version 1.0
 
 -Inyeccion SQL GET
 
@@ -14,4 +14,4 @@
 
 -Ejecucion automatica de varios tampers a la vez
 
-##Autor: Eduardo Sarria (Desdes)
+## Autor: Eduardo Sarria (Desdes)

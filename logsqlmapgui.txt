@@ -1,0 +1,7 @@
+sqlmap -u "1231" --data "23" --dbs
+sqlmap -u "1231" --data "23" --dbs
+sqlmap -u "123" --data "345" --dbs
+sqlmap -u "123" --data "345" --dbs
+sqlmap -u "123" --data "345" --dbs --tamper="chardoubleencode"
+sqlmap -u "123" --data "345" --dbs --tamper="charencode"
+sqlmap -u "123" --data "345" --dbs --tamper="charunicodeencode"

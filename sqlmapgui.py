@@ -5,10 +5,8 @@ import Tkinter
 import os
 
 #Funcion para ejecutar el sqlmap en la misma shell que se ejecuta el programa
-def current():
-    #Iniciando archivo de logs
-    log = open ('logsqlmapgui.txt','a')
-
+def current(val = 1):
+    
     #global val_tampers
     payload=sqlmap
 
@@ -16,7 +14,7 @@ def current():
         payload = payload + " -u \""+target.get()
 
         if post.get('1.0', 'end-1c') is not "":
-            payload = payload + " --data \""+post.get('1.0', 'end-1c')
+            payload = payload + "\" --data \""+post.get('1.0', 'end-1c')
 
         if parametros.get() is not "":
             payload = payload + "\" -p \""+parametros.get()
@@ -45,7 +43,7 @@ def current():
     if thr.get() is not "":
         payload = payload + " --threads="+thr.get()
     if v.get() is not "":
-        payload = payload + " -v="+v.get()
+        payload = payload + " -v "+v.get()
     #no-cast
     if nc.get() is 1:
         payload = payload + " --no-cast"
@@ -66,21 +64,49 @@ def current():
         payload = payload + " --proxy=\""+proxy.get()+"\""
 
     #Guardando logs
-    log.write(payload+'\n')
-
-    #Verificar antes de ejecutar
-    print payload
-    #Ejecutar en la shell
-    os.system(payload)
-
+    #log.write(payload+'\n')
+    #log.close()
+    
+    if val == 1:
+        #Iniciando archivo de logs
+        log = open ('logsqlmapgui.txt','a')
+        #Verificar antes de ejecutar
+        print payload
+        #Guardando logs
+        log.write(payload+'\n')
+        log.close()
+        #Ejecutar en la shell
+        os.system(payload)
+    else:
+        return payload
     #Cerrando los logs
-    log.close()
 
 #Funcion para ejecutar el sqlmap en otras shells
 def other():
-    payload=sqlmap+" -u "+target.get()+" -D "+db.get()+" -T "+table.get()+" -C "+column.get()+" --dump"
+    #global current_tampers
+    #Obteniendo el payload de la funcion current
+    payl = current(0)
+    #print payl
+    #print current_tampers
+    if len(current_tampers) is not 0:
+        for tamper in current_tampers:
+            #Iniciando archivo de logs
+            log = open ('logsqlmapgui.txt','a')
+            #Creando comando con tampers
+            comand = payl+" --tamper=\""+tamper+"\""
+            #Guardando logs
+            log.write(comand+'\n')
+            log.close()
+            #Ejecutando
+            os.system('gnome-terminal -x bash -c "'+comand+';bash"')
+    else:
+        #Iniciando archivo de logs
+        log = open ('logsqlmapgui.txt','a')
+        log.write(payl+'\n')
+        log.close()
+        os.system('gnome-terminal -x bash -c "'+payl+';bash"')
     #Comando usado: gnome-terminal -x bash -c "comando;bash"
-    os.system('gnome-terminal -x bash -c "'+payload+';bash"')
+    #os.system('gnome-terminal -x bash -c "'+payload+';bash"')
 
 #Funcion para crear la cadena de tampers ejm: tamper1,tamper2,tamper3
 def set_tamp(var):
@@ -89,7 +115,7 @@ def set_tamp(var):
     else:
         current_tampers.append(var)
 
-    print current_tampers
+    #print current_tampers
 #Ventana Window Tamper    
 def tampers():
 
